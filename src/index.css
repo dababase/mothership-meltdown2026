@@ -1,7 +1,9 @@
 /* ==========================================================================
    1. BASE RESETS & UNIVERSAL STYLES
    ========================================================================== */
-   * {
+   h1 { text-align: center; }
+
+  * {
     box-sizing: border-box;
   }
   
@@ -385,7 +387,9 @@ body, html, .app-shell {
 .modal {
   background-color: #E5CE71 !important;
 }
-.modal-title, .cat-label, .cat-desc, .modal-header * {
+.modal-title, .cat-label, .cat-desc, .modal-header h1 { text-align: center; }
+
+  * {
   color: #111827 !important;
 }
 .modal-header {
@@ -458,7 +462,7 @@ body, html, .app-shell {
    .top-header-image {
      width: 100%;
      display: block;
-     max-height: 260px;
+     max-height: 80px;
      object-fit: cover;
      object-position: center;
      border-bottom: 2px solid rgba(255,255,255,0.08);
