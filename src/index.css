@@ -259,6 +259,11 @@ body, html {
   color: #111827;
 }
 
+.modal-header h2 {
+  font-family: 'SnyderSpeedBrush', sans-serif;
+  font-weight: normal;
+}
+
 .modal-title {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 1.35rem;
