@@ -10,18 +10,20 @@ h1 {
   box-sizing: border-box;
 }
 
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #0d0e12;
 }
 
 /* ==========================================================================
-   2. SPACE HEADER BANNER & LOGO
-   ========================================================================== */
+     2. SPACE HEADER BANNER & LOGO
+     ========================================================================== */
 
 .app-header {
   background-image: url('./assets/space-bg.jpeg');
@@ -43,8 +45,8 @@ body, html {
 }
 
 /* ==========================================================================
-   3. TYPOGRAPHY & LIGHT TEXT FOR DARK BACKGROUND
-   ========================================================================== */
+     3. TYPOGRAPHY & LIGHT TEXT FOR DARK BACKGROUND
+     ========================================================================== */
 
 .screen {
   display: flex;
@@ -77,7 +79,8 @@ body, html {
   margin-top: 2px;
 }
 
-.muted, .screen p {
+.muted,
+.screen p {
   color: #9ca3af;
   font-size: 1rem;
   line-height: 1.5;
@@ -90,8 +93,8 @@ body, html {
 }
 
 /* ==========================================================================
-   4. RANKING LIST & CARDS
-   ========================================================================== */
+     4. RANKING LIST & CARDS
+     ========================================================================== */
 
 .rank-list {
   list-style: none;
@@ -103,7 +106,7 @@ body, html {
 }
 
 .rank-item {
-  background: #E5CE71;
+  background: #e5ce71;
   border: 1px solid #cbb55f;
   border-radius: 12px;
   padding: 16px;
@@ -115,18 +118,6 @@ body, html {
 
 .rank-item * {
   color: #111827;
-}
-
-.drag-handle {
-  font-size: 1.25rem;
-  cursor: grab;
-  padding: 0 12px 0 4px;
-  user-select: none;
-  touch-action: none;
-}
-
-.drag-handle:active {
-  cursor: grabbing;
 }
 
 .position {
@@ -144,8 +135,8 @@ body, html {
 }
 
 /* ==========================================================================
-   5. INTERACTIVE BUTTONS & INPUTS
-   ========================================================================== */
+     5. INTERACTIVE BUTTONS & INPUTS
+     ========================================================================== */
 
 .input {
   width: 100%;
@@ -162,7 +153,8 @@ body, html {
   border-color: #3b82f6;
 }
 
-.btn-primary, .btn-submit {
+.btn-primary,
+.btn-submit {
   background-color: #10b981;
   color: white;
   border: none;
@@ -174,7 +166,8 @@ body, html {
   transition: background-color 0.15s ease;
 }
 
-.btn-primary:hover, .btn-submit:hover {
+.btn-primary:hover,
+.btn-submit:hover {
   background-color: #059669;
 }
 
@@ -199,8 +192,8 @@ body, html {
 }
 
 /* ==========================================================================
-   6. MODAL
-   ========================================================================== */
+     6. MODAL
+     ========================================================================== */
 
 .modal-overlay {
   position: fixed;
@@ -223,7 +216,7 @@ body, html {
 }
 
 .modal {
-  background-color: #E5CE71;
+  background-color: #e5ce71;
   width: 100%;
   max-width: 540px;
   max-height: 85vh;
@@ -254,7 +247,7 @@ body, html {
 }
 
 .modal-title {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 1.35rem;
   font-weight: 700;
   color: #111827;
@@ -337,8 +330,8 @@ body, html {
 }
 
 /* ==========================================================================
-   7. ANIMATIONS
-   ========================================================================== */
+     7. ANIMATIONS
+     ========================================================================== */
 
 @keyframes slideUp {
   from {
@@ -350,12 +343,12 @@ body, html {
 }
 
 /* ==========================================================================
-   8. DARK BACKGROUND & PAGE WRAPPER
-   ========================================================================== */
+     8. DARK BACKGROUND & PAGE WRAPPER
+     ========================================================================== */
 
-body, html {
+body,
+html {
   background-color: #0d0e12;
-  overscroll-behavior: none;
 }
 
 .page-wrapper,
@@ -365,8 +358,8 @@ body, html {
 }
 
 /* ==========================================================================
-   9. HEADER IMAGE
-   ========================================================================== */
+     9. HEADER IMAGE
+     ========================================================================== */
 
 .top-header {
   width: 100%;
@@ -377,15 +370,16 @@ body, html {
 .top-header-image {
   width: 100%;
   display: block;
-  max-height: 160px;
-  object-fit: contain;
+  max-height: 80px;
+  object-fit: cover;
+  object-position: center;
   border-bottom: 2px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
 }
 
 /* ==========================================================================
-   10. RANK SCREEN LAYOUT
-   ========================================================================== */
+     10. RANK SCREEN LAYOUT
+     ========================================================================== */
 
 .rank-header {
   padding: 20px 16px 8px;
@@ -404,31 +398,194 @@ body, html {
 }
 
 /* ==========================================================================
-   11. ORDINAL MEDALS
-   ========================================================================== */
+     11. ORDINAL MEDALS
+     ========================================================================== */
 
 .rank-item:nth-child(1) .position::after {
-  content: "st \1F947";
+  content: 'st \1F947';
   margin-left: 2px;
   font-size: 1.15rem;
 }
 
 .rank-item:nth-child(2) .position::after {
-  content: "nd \1F948";
+  content: 'nd \1F948';
   margin-left: 2px;
   font-size: 1.15rem;
 }
 
 .rank-item:nth-child(3) .position::after {
-  content: "rd \1F949";
+  content: 'rd \1F949';
   margin-left: 2px;
   font-size: 1.15rem;
 }
 
-.rank-item:nth-child(n+4) .position::after {
-  content: "th";
+.rank-item:nth-child(n + 4) .position::after {
+  content: 'th';
   margin-left: 1px;
   font-size: 0.85rem;
   font-weight: 600;
   opacity: 0.85;
+}
+
+/* ==========================================================================
+     12. SCORE DISPLAY ON RANK ITEMS
+     ========================================================================== */
+
+.entry-score {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #111827;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  padding: 3px 8px;
+  margin-right: 8px;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+     13. MODAL SCORE INPUTS
+     ========================================================================== */
+
+.modal-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-total {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 4px 10px;
+}
+
+.cat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Stepper control: [âˆ’] value / max [+] */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stepper-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.08);
+  color: #111827;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s ease, transform 0.1s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.stepper-btn:active {
+  background: rgba(0, 0, 0, 0.2);
+  transform: scale(0.92);
+}
+
+.stepper-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+  transform: none;
+}
+
+.stepper-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #111827;
+  min-width: 32px;
+  text-align: center;
+}
+
+.stepper-max {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+     14. MODAL DIVIDER
+     ========================================================================== */
+
+.modal-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 4px 0;
+}
+
+/* ==========================================================================
+     15. PLACEMENT BUTTONS
+     ========================================================================== */
+
+.placement-options {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.placement-btn {
+  flex: 1;
+  padding: 12px 8px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.15s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Mids â€” red */
+.placement-btn.placement-mids {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #dc2626;
+}
+.placement-btn.placement-mids.selected {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
+/* Average â€” blue */
+.placement-btn.placement-average {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.35);
+  color: #2563eb;
+}
+.placement-btn.placement-average.selected {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
+/* Fire â€” green */
+.placement-btn.placement-fire {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #059669;
+}
+.placement-btn.placement-fire.selected {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
 }
