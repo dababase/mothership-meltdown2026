@@ -322,8 +322,9 @@ function ScoringScreen({ judgeName, entries, notes, onNotesUpdate, onSubmit, sav
 }
 
 function EntryRow({ id, position, hasNotes, score, isTied, onTap }) {
+  const unscored = score === 0;
   return (
-    <li className={`rank-item${isTied ? ' tie-warning' : ''}`}>
+    <li className={`rank-item${isTied ? ' tie-warning' : ''}${unscored ? ' unscored' : ''}`}>
       <span className="position">{position}</span>
       <span className="entry-num">Entry #{id}</span>
       <span className="entry-score">{displayScore(score)}/100</span>
