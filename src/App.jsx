@@ -2,6 +2,11 @@ import { useState, useRef, useCallback } from 'react';
 import { supabase } from './supabaseClient';
 import { EVENT_CODE, EVENT_NAME, CATEGORIES } from './config';
 
+// Raw total is 0–500 (5 cats × 100). Display divides by 5 → shows out of 100.
+function displayScore(rawTotal) {
+  return Number((rawTotal / CATEGORIES.length).toFixed(1));
+}
+
 export default function App() {
   const [step, setStep] = useState('code');
   const [judgeCode, setJudgeCode] = useState('');
@@ -155,11 +160,7 @@ export default function App() {
     return (
       <div className="page-wrapper">
         <div className="top-header">
-          <img
-            src="/mothership.jpeg"
-            alt="Mothership Meltdown"
-            className="top-header-image"
-          />
+          <img src="/mothership.jpeg" alt="Mothership Meltdown" className="top-header-image" />
         </div>
 
         <div className="screen">
@@ -185,11 +186,7 @@ export default function App() {
     return (
       <div className="page-wrapper">
         <div className="top-header">
-          <img
-            src="/mothership.jpeg"
-            alt="Mothership Meltdown"
-            className="top-header-image"
-          />
+          <img src="/mothership.jpeg" alt="Mothership Meltdown" className="top-header-image" />
         </div>
 
         <div className="screen">
@@ -214,11 +211,7 @@ export default function App() {
     return (
       <div className="page-wrapper">
         <div className="top-header">
-          <img
-            src="/mothership.jpeg"
-            alt="Mothership Meltdown"
-            className="top-header-image"
-          />
+          <img src="/mothership.jpeg" alt="Mothership Meltdown" className="top-header-image" />
         </div>
 
         <div className="screen">
@@ -244,29 +237,32 @@ export default function App() {
   );
 }
 
-function ScoringScreen({
-  judgeName,
-  entries,
-  notes,
-  onNotesUpdate,
-  onSubmit,
-  saveStatus,
-}) {
+function ScoringScreen({ judgeName, entries, notes, onNotesUpdate, onSubmit, saveStatus }) {
   const [openEntry, setOpenEntry] = useState(null);
+  const [sortOrder, setSortOrder] = useState('rank');
 
-  // Always sorted by total score descending — updates automatically on every score change
-  const sortedEntries = [...entries].sort(
-    (a, b) => totalScore(notes[b]) - totalScore(notes[a])
-  );
+  // Tie detection — only flag entries with score > 0
+  const tiedScores = (() => {
+    const counts = {};
+    for (const e of entries) {
+      const s = totalScore(notes[e]);
+      if (s > 0) counts[s] = (counts[s] || 0) + 1;
+    }
+    const tied = new Set();
+    for (const [s, c] of Object.entries(counts)) {
+      if (c > 1) tied.add(Number(s));
+    }
+    return tied;
+  })();
+
+  const sortedEntries = sortOrder === 'rank'
+    ? [...entries].sort((a, b) => totalScore(notes[b]) - totalScore(notes[a]))
+    : [...entries];
 
   return (
     <div className="rank-screen">
       <div className="top-header">
-        <img
-          src="/mothership.jpeg"
-          alt="Mothership Meltdown"
-          className="top-header-image"
-        />
+        <img src="/mothership.jpeg" alt="Mothership Meltdown" className="top-header-image" />
       </div>
 
       <header className="rank-header">
@@ -280,11 +276,26 @@ function ScoringScreen({
         </button>
       </header>
 
+      <div className="sort-toggle">
+        <button
+          className={`sort-opt${sortOrder === 'rank' ? ' active' : ''}`}
+          onClick={() => setSortOrder('rank')}
+        >
+          Ranking
+        </button>
+        <button
+          className={`sort-opt${sortOrder === 'sequential' ? ' active' : ''}`}
+          onClick={() => setSortOrder('sequential')}
+        >
+          1–50 Order
+        </button>
+      </div>
+
       <p className="muted small">
         Tap an entry to score it. Rankings update automatically.
       </p>
 
-      <ul className="rank-list">
+      <ul className={`rank-list${sortOrder === 'sequential' ? ' no-medals' : ''}`}>
         {sortedEntries.map((entryNum, idx) => (
           <EntryRow
             key={entryNum}
@@ -292,6 +303,7 @@ function ScoringScreen({
             position={idx + 1}
             hasNotes={hasAnyNote(notes[entryNum])}
             score={totalScore(notes[entryNum])}
+            isTied={tiedScores.has(totalScore(notes[entryNum]))}
             onTap={() => setOpenEntry(entryNum)}
           />
         ))}
@@ -309,17 +321,13 @@ function ScoringScreen({
   );
 }
 
-function EntryRow({ id, position, hasNotes, score, onTap }) {
+function EntryRow({ id, position, hasNotes, score, isTied, onTap }) {
   return (
-    <li className="rank-item">
+    <li className={`rank-item${isTied ? ' tie-warning' : ''}`}>
       <span className="position">{position}</span>
       <span className="entry-num">Entry #{id}</span>
-      <span className="entry-score">{score}/100</span>
-      <button
-        className="notes-btn"
-        onClick={onTap}
-        aria-label="Score and add notes"
-      >
+      <span className="entry-score">{displayScore(score)}/100</span>
+      <button className="notes-btn" onClick={onTap} aria-label="Score and add notes">
         {hasNotes ? '📝' : '＋'}
       </button>
     </li>
@@ -355,9 +363,9 @@ function EntryModal({ entryNum, notes, onClose, onSave }) {
   const maxTotal = CATEGORIES.reduce((sum, c) => sum + c.maxScore, 0);
 
   const PLACEMENT_OPTIONS = [
-    { value: 'mids', label: 'Mids', className: 'placement-mids' },
+    { value: 'mids',    label: 'Mids',    className: 'placement-mids' },
     { value: 'average', label: 'Average', className: 'placement-average' },
-    { value: 'fire', label: 'Fire 🔥', className: 'placement-fire' },
+    { value: 'fire',    label: 'Fire 🔥',  className: 'placement-fire' },
   ];
 
   return (
@@ -367,9 +375,7 @@ function EntryModal({ entryNum, notes, onClose, onSave }) {
           <h2>Entry #{entryNum}</h2>
 
           <div className="modal-header-right">
-            <span className="modal-total">
-              {runningTotal} / {maxTotal}
-            </span>
+            <span className="modal-total">{displayScore(runningTotal)} / 100</span>
             <button className="close-btn" onClick={onClose} aria-label="Close">
               ×
             </button>
@@ -381,7 +387,7 @@ function EntryModal({ entryNum, notes, onClose, onSave }) {
             <div key={cat.key} className="category-block">
               <div className="cat-header">
                 <label className="cat-label">{cat.label}</label>
-                <ScoreStepper
+                <ScoreInput
                   value={local[cat.key]?.score ?? 0}
                   max={cat.maxScore}
                   onChange={(val) => updateField(cat.key, 'score', val)}
@@ -408,9 +414,7 @@ function EntryModal({ entryNum, notes, onClose, onSave }) {
               {PLACEMENT_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
-                  className={`placement-btn ${opt.className}${
-                    local.placement === opt.value ? ' selected' : ''
-                  }`}
+                  className={`placement-btn ${opt.className}${local.placement === opt.value ? ' selected' : ''}`}
                   onClick={() => handlePlacement(opt.value)}
                 >
                   {opt.label}
@@ -435,30 +439,40 @@ function EntryModal({ entryNum, notes, onClose, onSave }) {
   );
 }
 
-function ScoreStepper({ value, max, onChange }) {
-  const decrement = () => onChange(roundHalf(Math.max(0, value - 0.5)));
-  const increment = () => onChange(roundHalf(Math.min(max, value + 0.5)));
+function ScoreInput({ value, max, onChange }) {
+  const [draft, setDraft] = useState(value === 0 ? '' : String(value));
+
+  const commit = (raw) => {
+    if (raw === '' || raw == null) {
+      onChange(0);
+      setDraft('');
+      return;
+    }
+    const num = parseFloat(raw);
+    if (isNaN(num)) {
+      setDraft(value === 0 ? '' : String(value));
+      return;
+    }
+    const rounded = roundHalf(Math.min(max, Math.max(0, num)));
+    onChange(rounded);
+    setDraft(rounded === 0 ? '' : String(rounded));
+  };
 
   return (
-    <div className="stepper">
-      <button
-        className="stepper-btn"
-        onClick={decrement}
-        disabled={value <= 0}
-        aria-label="Decrease score"
-      >
-        −
-      </button>
-      <span className="stepper-value">{value}</span>
-      <span className="stepper-max">/ {max}</span>
-      <button
-        className="stepper-btn"
-        onClick={increment}
-        disabled={value >= max}
-        aria-label="Increase score"
-      >
-        +
-      </button>
+    <div className="score-input-row">
+      <input
+        className="score-input"
+        type="number"
+        min="0"
+        max={max}
+        step="0.5"
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={(e) => commit(e.target.value)}
+        placeholder="–"
+        inputMode="decimal"
+      />
+      <span className="score-max">/ {max}</span>
     </div>
   );
 }
@@ -496,27 +510,18 @@ function totalScore(entryNotes) {
 function hasAnyNote(entryNotes) {
   if (!entryNotes) return false;
   if (entryNotes.placement) return true;
-  if (entryNotes.overall_notes && entryNotes.overall_notes.trim().length > 0)
-    return true;
+  if (entryNotes.overall_notes && entryNotes.overall_notes.trim().length > 0) return true;
   return CATEGORIES.some((cat) => {
     const v = entryNotes[cat.key];
-    return (
-      v &&
-      ((typeof v.score === 'number' && v.score > 0) ||
-        (v.text && v.text.trim().length > 0))
-    );
+    return v && ((typeof v.score === 'number' && v.score > 0) || (v.text && v.text.trim().length > 0));
   });
 }
 
 function saveStatusLabel(status) {
   switch (status) {
-    case 'saving':
-      return 'Saving…';
-    case 'saved':
-      return 'Saved ✓';
-    case 'error':
-      return 'Save failed — check connection';
-    default:
-      return '';
+    case 'saving':  return 'Saving…';
+    case 'saved':   return 'Saved ✓';
+    case 'error':   return 'Save failed — check connection';
+    default:        return '';
   }
 }
