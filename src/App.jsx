@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { supabase } from './supabaseClient';
-import { EVENT_CODE, EVENT_NAME, CATEGORIES } from './config';
+import { EVENT_CODE, EVENT_NAME, CATEGORIES, ENTRY_COUNT } from './config';
 
 // Raw total is 0–500 (5 cats × 100). Display divides by 5 → shows out of 100.
 function displayScore(rawTotal) {
@@ -81,6 +81,12 @@ export default function App() {
       }
     } catch (_) {
       // localStorage unavailable or corrupt — Supabase data is fine
+    }
+
+    // Ensure all entries 1–ENTRY_COUNT are present; unranked ones go at the end
+    const rankedSet = new Set(finalEntries.map(Number));
+    for (let i = 1; i <= ENTRY_COUNT; i++) {
+      if (!rankedSet.has(i)) finalEntries = [...finalEntries, i];
     }
 
     setEntries(finalEntries);
@@ -341,7 +347,7 @@ function ScoringScreen({ judgeName, entries, notes, onNotesUpdate, onSubmit, sav
 
   const sortedEntries = sortOrder === 'rank'
     ? [...entries].sort((a, b) => totalScore(notes[b]) - totalScore(notes[a]))
-    : [...entries];
+    : [...entries].filter(e => e != null).sort((a, b) => Number(a) - Number(b));
 
   return (
     <div className="rank-screen">
