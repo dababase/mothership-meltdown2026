@@ -23,18 +23,23 @@ export default function Results() {
         const totals = {};
         for (const row of data) {
           for (const [entryNum, entryNotes] of Object.entries(row.notes || {})) {
-            if (!totals[entryNum]) totals[entryNum] = {};
+            if (!totals[entryNum]) totals[entryNum] = { catScores: {}, judgeTotals: [] };
+            let judgeTotal = 0;
+            let judgeScored = 0;
             for (const cat of CATEGORIES) {
               const score = entryNotes?.[cat.key]?.score;
               if (score !== undefined && score !== '' && score !== null) {
-                if (!totals[entryNum][cat.key]) totals[entryNum][cat.key] = [];
-                totals[entryNum][cat.key].push(Number(score));
+                if (!totals[entryNum].catScores[cat.key]) totals[entryNum].catScores[cat.key] = [];
+                totals[entryNum].catScores[cat.key].push(Number(score));
+                judgeTotal += Number(score);
+                judgeScored++;
               }
             }
+            if (judgeScored > 0) totals[entryNum].judgeTotals.push(judgeTotal);
           }
         }
 
-        const rows = Object.entries(totals).map(([entryNum, catScores]) => {
+        const rows = Object.entries(totals).map(([entryNum, { catScores, judgeTotals }]) => {
           const catAvgs = {};
           let totalAvg = 0;
           for (const cat of CATEGORIES) {
@@ -44,11 +49,19 @@ export default function Results() {
             totalAvg += avg;
           }
           const perCatAvg = Math.round((totalAvg / CATEGORIES.length) * 10) / 10;
-          return { entry: Number(entryNum), catAvgs, totalAvg: Math.round(totalAvg * 10) / 10, perCatAvg };
+          const rangeMin = judgeTotals.length ? Math.min(...judgeTotals) : 0;
+          const rangeMax = judgeTotals.length ? Math.max(...judgeTotals) : 0;
+          return { entry: Number(entryNum), catAvgs, totalAvg: Math.round(totalAvg * 10) / 10, perCatAvg, rangeMin, rangeMax };
         });
 
         rows.sort((a, b) => b.totalAvg - a.totalAvg);
         rows.forEach((r, i) => r.rank = i + 1);
+
+        // compute per-category rank for each entry
+        for (const cat of CATEGORIES) {
+          const sorted = [...rows].sort((a, b) => b.catAvgs[cat.key] - a.catAvgs[cat.key]);
+          sorted.forEach((r, i) => { r[`catRank_${cat.key}`] = i + 1; });
+        }
 
         setResults(rows);
         setLoading(false);
@@ -83,6 +96,7 @@ export default function Results() {
               {CATEGORIES.map(cat => <th key={cat.key}>{cat.label}</th>)}
               <th>Total</th>
               <th>Avg / Cat</th>
+              <th>Score Range</th>
             </tr>
           </thead>
           <tbody>
@@ -95,10 +109,45 @@ export default function Results() {
                 ))}
                 <td className="total-cell">{row.totalAvg} <span className="out-of">/ {maxTotal}</span></td>
                 <td className="avg-cell">{row.perCatAvg} <span className="out-of">/ {MAX_SCORE}</span></td>
+                <td className="range-cell">{row.rangeMin}–{row.rangeMax}</td>
               </tr>
             ))}
           </tbody>
         </table>
+      )}
+
+      {!loading && results.length > 0 && (
+        <div className="entry-breakdown">
+          <h2 className="breakdown-title">Entry Breakdowns</h2>
+          {results.map(row => (
+            <div key={row.entry} className={`breakdown-card ${row.rank <= 3 ? `top-${row.rank}` : ''}`}>
+              <div className="breakdown-header">
+                <span className="breakdown-rank">{medal(row.rank)}</span>
+                <span className="breakdown-entry">Entry #{row.entry}</span>
+                <span className="breakdown-overall">Overall avg: <strong>{row.perCatAvg}</strong> / {MAX_SCORE}</span>
+                <span className="breakdown-range">Range: <strong>{row.rangeMin}–{row.rangeMax}</strong></span>
+              </div>
+              <table className="breakdown-table">
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Cat. Rank</th>
+                    <th>Avg Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {CATEGORIES.map(cat => (
+                    <tr key={cat.key}>
+                      <td>{cat.label}</td>
+                      <td className="rank-cell">{medal(row[`catRank_${cat.key}`])}</td>
+                      <td className="score-cell">{row.catAvgs[cat.key]} <span className="out-of">/ {MAX_SCORE}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ))}
+        </div>
       )}
 
       {!loading && results.length > 0 && (
