@@ -539,19 +539,21 @@ function ScoreInput({ value, max, onChange }) {
     setDraft(rounded === 0 ? '' : String(rounded));
   };
 
+  const handleChange = (e) => {
+    const cleaned = e.target.value.replace(/[^0-9.]/g, '');
+    setDraft(cleaned);
+  };
+
   return (
     <div className="score-input-row">
       <input
         className="score-input"
-        type="number"
-        min="0"
-        max={max}
-        step="0.5"
+        type="text"
+        inputMode="decimal"
         value={draft}
-        onChange={(e) => setDraft(e.target.value)}
+        onChange={handleChange}
         onBlur={(e) => commit(e.target.value)}
         placeholder="–"
-        inputMode="decimal"
       />
       <span className="score-max">/ {max}</span>
     </div>
