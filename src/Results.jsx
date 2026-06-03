@@ -13,12 +13,17 @@ export default function Results() {
   useEffect(() => {
     supabase
       .from(TABLE)
-      .select('judge_code, notes')
+      .select('judge_code, judge_name, notes')
       .not('submitted_at', 'is', null)
       .then(({ data, error: dbErr }) => {
         if (dbErr || !data) { setLoading(false); return; }
 
         setJudgeCount(data.length);
+
+        const judgeNames = {};
+        for (const row of data) {
+          if (row.judge_name) judgeNames[row.judge_code] = row.judge_name;
+        }
 
         const totals = {};
         for (const row of data) {
@@ -35,7 +40,7 @@ export default function Results() {
                 judgeScored++;
               }
             }
-            if (judgeScored > 0) totals[entryNum].judgeTotals.push(judgeTotal);
+            if (judgeScored > 0) totals[entryNum].judgeTotals.push({ name: judgeNames[row.judge_code] || `Judge ${row.judge_code}`, total: judgeTotal });
           }
         }
 
@@ -49,15 +54,16 @@ export default function Results() {
             totalAvg += avg;
           }
           const perCatAvg = Math.round((totalAvg / CATEGORIES.length) * 10) / 10;
-          const rangeMin = judgeTotals.length ? Math.min(...judgeTotals) : 0;
-          const rangeMax = judgeTotals.length ? Math.max(...judgeTotals) : 0;
-          return { entry: Number(entryNum), catAvgs, totalAvg: Math.round(totalAvg * 10) / 10, perCatAvg, rangeMin, rangeMax };
+          const sorted = [...judgeTotals].sort((a, b) => b.total - a.total);
+          const rangeMin = sorted.length ? sorted[sorted.length - 1].total : 0;
+          const rangeMax = sorted.length ? sorted[0].total : 0;
+          const topJudges = sorted.slice(0, 2);
+          return { entry: Number(entryNum), catAvgs, totalAvg: Math.round(totalAvg * 10) / 10, perCatAvg, rangeMin, rangeMax, topJudges };
         });
 
         rows.sort((a, b) => b.totalAvg - a.totalAvg);
         rows.forEach((r, i) => r.rank = i + 1);
 
-        // compute per-category rank for each entry
         for (const cat of CATEGORIES) {
           const sorted = [...rows].sort((a, b) => b.catAvgs[cat.key] - a.catAvgs[cat.key]);
           sorted.forEach((r, i) => { r[`catRank_${cat.key}`] = i + 1; });
@@ -73,6 +79,9 @@ export default function Results() {
 
   return (
     <div className="results-page">
+      <div className="top-header">
+        <img src="/mothership.jpeg" alt="Mothership Meltdown" className="top-header-image" />
+      </div>
       <div className="results-header">
         <h1>{EVENT_NAME}</h1>
         <h2>Final Results</h2>
@@ -126,6 +135,12 @@ export default function Results() {
                 <span className="breakdown-entry">Entry #{row.entry}</span>
                 <span className="breakdown-overall">Overall avg: <strong>{row.perCatAvg}</strong> / {MAX_SCORE}</span>
                 <span className="breakdown-range">Range: <strong>{row.rangeMin}–{row.rangeMax}</strong></span>
+                {row.topJudges[0] && (
+                  <span className="breakdown-top-judges">
+                    🥇 {row.topJudges[0].name} <span className="out-of">({row.topJudges[0].total})</span>
+                    {row.topJudges[1] && <> · 🥈 {row.topJudges[1].name} <span className="out-of">({row.topJudges[1].total})</span></>}
+                  </span>
+                )}
               </div>
               <table className="breakdown-table">
                 <thead>

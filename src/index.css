@@ -758,6 +758,39 @@ body, html {
 .breakdown-entry { font-weight: 800; font-size: 1rem; flex: 1; }
 .breakdown-overall { font-size: 0.875rem; color: #374151; }
 .breakdown-range { font-size: 0.875rem; color: #6b7280; }
+.breakdown-top-judges { font-size: 0.875rem; color: #6b7280; white-space: nowrap; }
+
+/* Results link on submitted screen */
+.results-link-block {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.btn-results {
+  display: inline-block;
+  padding: 0.65rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  background: #10b981;
+  color: #fff;
+  transition: background 0.15s ease;
+}
+
+.btn-results:hover { background: #059669; }
+
+.btn-results-disabled {
+  background: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 
 .breakdown-table {
   width: 100%;
