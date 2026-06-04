@@ -815,7 +815,8 @@ body, html {
 }
 
 .breakdown-table .rank-cell  { font-size: 1rem; }
-.breakdown-table .score-cell { text-align: right; }
+.breakdown-table th:last-child { text-align: right; }
+.breakdown-table .score-cell { text-align: right; white-space: nowrap; color: #94a3b8; }
 .breakdown-table .out-of     { color: #9ca3af; font-size: 0.78rem; }
 
 @media print {
