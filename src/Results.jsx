@@ -75,18 +75,7 @@ export default function Results() {
           return { entry: Number(entryNum), catAvgs, totalAvg: Math.round(totalAvg * 10) / 10, perCatAvg, rangeMin, rangeMax, topJudges, highJudge, lowJudge };
         });
 
-        // Points-based ranking: each judge ranks all entries they scored by total score
-        // 1st place from a judge = 1 point; lowest total points wins
-        const judgeRankPoints = {};
-        for (const { entryTotals } of Object.values(judgeMap)) {
-          const sorted = [...entryTotals].sort((a, b) => b.total - a.total);
-          sorted.forEach((e, i) => {
-            if (!judgeRankPoints[e.entry]) judgeRankPoints[e.entry] = 0;
-            judgeRankPoints[e.entry] += (i + 1);
-          });
-        }
-        rows.forEach(r => { r.rankPoints = judgeRankPoints[r.entry] || 0; });
-        rows.sort((a, b) => a.rankPoints - b.rankPoints);
+        rows.sort((a, b) => b.perCatAvg - a.perCatAvg);
         rows.forEach((r, i) => r.rank = i + 1);
 
         for (const cat of CATEGORIES) {
